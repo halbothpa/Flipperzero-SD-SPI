@@ -12,32 +12,22 @@ on:
         type: string
 
 jobs:
-  build-and-release:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     strategy:
       fail-fast: false
       matrix:
         include:
           - name: "Official"
-            firmware_repo: "flipperdevices/flipperzero-firmware"
-            firmware_ref: "release"
             sdk_channel: "release"
             short_name: "ofw"
           - name: "Unleashed"
-            firmware_repo: "DarkFlippers/unleashed-firmware"
-            firmware_ref: "dev"
             sdk_channel: "dev"
             short_name: "unleashed"
           - name: "RogueMaster"
-            firmware_repo: "RogueMaster/flipperzero-firmware-wPlugins"
-            firmware_ref: "main"
             sdk_channel: "dev"
             short_name: "roguemaster"
           - name: "Momentum"
-            firmware_repo: "Next-Flip/Momentum-Firmware"
-            firmware_ref: "dev"
             sdk_channel: "dev"
             short_name: "momentum"
 
@@ -65,7 +55,7 @@ jobs:
           cd sd_spi
           ufbt build
 
-      - name: Get app version and prepare artifact
+      - name: Prepare artifact
         id: prepare
         run: |
           cd sd_spi
@@ -77,16 +67,38 @@ jobs:
           if [ -n "$FAP_FILE" ]; then
             NEW_NAME="sd_spi_${{ matrix.short_name }}.fap"
             cp "$FAP_FILE" "dist/$NEW_NAME"
-            echo "fap_name=$NEW_NAME" >> $GITHUB_OUTPUT
-            echo "fap_path=sd_spi/dist/$NEW_NAME" >> $GITHUB_OUTPUT
           fi
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: sd_spi_${{ matrix.short_name }}_${{ steps.prepare.outputs.version }}
-          path: ${{ steps.prepare.outputs.fap_path }}
+          name: fap-${{ matrix.short_name }}
+          path: sd_spi/dist/sd_spi_${{ matrix.short_name }}.fap
           if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout app code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Display structure of downloaded files
+        run: ls -R artifacts
+
+      - name: Get app version
+        id: version
+        run: |
+          VERSION=$(grep -oP "fap_version=\(\K[0-9]+,\s*[0-9]+" sd_spi/application.fam | tr -d ' ' | tr ',' '.')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Determine tag name
         id: tag
@@ -97,29 +109,38 @@ jobs:
             echo "tag_name=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create or Update Release
+      - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.tag.outputs.tag_name }}
           name: Release ${{ steps.tag.outputs.tag_name }}
           body: |
-            ## SD SPI v${{ steps.prepare.outputs.version }}
+            ## SD SPI v${{ steps.version.outputs.version }}
             
-            Flipper Zero FAP for Lock and Unlock SD card through SPI protocol.
+            Flipper Zero FAP for Lock and Unlock SD card through SPI protocol (CMD42).
             
-            ### Builds for Multiple Firmwares
-            - Official Firmware (OFW)
-            - Unleashed Firmware
-            - RogueMaster Firmware
-            - Momentum Firmware
+            ### Supported Firmwares
+            This release includes builds for the following firmware variants:
+            - **sd_spi_ofw.fap** - Official Firmware (OFW)
+            - **sd_spi_unleashed.fap** - Unleashed Firmware
+            - **sd_spi_roguemaster.fap** - RogueMaster Firmware
+            - **sd_spi_momentum.fap** - Momentum Firmware
             
             ### Installation
             1. Download the appropriate `.fap` file for your firmware
-            2. Copy to `SD Card/apps/GPIO/` folder
-            3. Run from Flipper Zero Apps menu
+            2. Copy to `SD Card/apps/GPIO/` folder on your Flipper Zero
+            3. Navigate to `Apps > GPIO > SD SPI` on your device
+            
+            ### Features
+            - Initialize SD card via SPI
+            - Lock SD card with password (CMD42)
+            - Unlock SD card with password
+            - Force erase to remove unknown password
+            - Password persistence across sessions
           files: |
-            ${{ steps.prepare.outputs.fap_path }}
+            artifacts/fap-*/*.fap
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
