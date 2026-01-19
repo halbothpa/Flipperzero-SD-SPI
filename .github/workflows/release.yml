@@ -20,68 +20,43 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "Official"
-            sdk_channel: "release"
-            short_name: "ofw"
-          - name: "Unleashed"
-            sdk_channel: "dev"
-            short_name: "unleashed"
-          - name: "RogueMaster"
-            sdk_channel: "dev"
-            short_name: "roguemaster"
-          - name: "Momentum"
-            sdk_channel: "dev"
-            short_name: "momentum"
+          - name: "Official Release"
+            sdk-channel: "release"
+            short-name: "release"
+          - name: "Official Dev"
+            sdk-channel: "dev"
+            short-name: "dev"
+          - name: "Official RC"
+            sdk-channel: "rc"
+            short-name: "rc"
 
     name: Build for ${{ matrix.name }}
     
     steps:
-      - name: Checkout app code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Build with ufbt
+        uses: flipperdevices/flipperzero-ufbt-action@v0.1
+        id: build-app
         with:
-          python-version: '3.11'
+          sdk-channel: ${{ matrix.sdk-channel }}
+          app-dir: sd_spi
 
-      - name: Install ufbt
+      - name: Rename artifacts
         run: |
-          python3 -m pip install --upgrade ufbt
-
-      - name: Update ufbt SDK
-        run: |
-          ufbt update --channel=${{ matrix.sdk_channel }}
-
-      - name: Build FAP
-        run: |
-          cd sd_spi
-          ufbt build
-
-      - name: Prepare artifact
-        id: prepare
-        run: |
-          cd sd_spi
-          VERSION=$(grep -oP "fap_version=\(\K[0-9]+,\s*[0-9]+" application.fam | tr -d ' ' | tr ',' '.')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          
-          # Find and rename FAP with firmware name
-          FAP_FILE=$(find . -name "*.fap" -type f | head -n 1)
-          if [ -n "$FAP_FILE" ]; then
-            NEW_NAME="sd_spi_${{ matrix.short_name }}.fap"
-            mkdir -p dist
-            cp "$FAP_FILE" "dist/$NEW_NAME"
-            echo "fap_path=sd_spi/dist/$NEW_NAME" >> $GITHUB_OUTPUT
-          else
-            echo "Error: No .fap file found!"
-            find . -type f
-            exit 1
-          fi
+          mkdir -p artifacts
+          for file in ${{ steps.build-app.outputs.fap-dir }}/*.fap; do
+            if [ -f "$file" ]; then
+              cp "$file" "artifacts/sd_spi_${{ matrix.short-name }}.fap"
+            fi
+          done
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.1.8
         with:
-          name: fap-${{ matrix.short_name }}
-          path: ${{ steps.prepare.outputs.fap_path }}
+          name: fap-${{ matrix.short-name }}
+          path: artifacts/*.fap
           if-no-files-found: error
 
   release:
@@ -91,7 +66,7 @@ jobs:
       contents: write
     
     steps:
-      - name: Checkout app code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Download all artifacts
@@ -127,15 +102,14 @@ jobs:
             
             Flipper Zero FAP for Lock and Unlock SD card through SPI protocol (CMD42).
             
-            ### Supported Firmwares
-            This release includes builds for the following firmware variants:
-            - **sd_spi_ofw.fap** - Official Firmware (OFW)
-            - **sd_spi_unleashed.fap** - Unleashed Firmware
-            - **sd_spi_roguemaster.fap** - RogueMaster Firmware
-            - **sd_spi_momentum.fap** - Momentum Firmware
+            ### Supported Firmware Channels
+            This release includes builds for the following Official Firmware channels:
+            - **sd_spi_release.fap** - Official Release Channel (stable)
+            - **sd_spi_dev.fap** - Official Dev Channel (bleeding edge)
+            - **sd_spi_rc.fap** - Official RC Channel (release candidate)
             
             ### Installation
-            1. Download the appropriate `.fap` file for your firmware
+            1. Download the appropriate `.fap` file for your firmware channel
             2. Copy to `SD Card/apps/GPIO/` folder on your Flipper Zero
             3. Navigate to `Apps > GPIO > SD SPI` on your device
             
@@ -151,4 +125,3 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

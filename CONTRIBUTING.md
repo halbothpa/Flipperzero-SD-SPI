@@ -6,7 +6,7 @@ Thank you for your interest in contributing to the Flipper Zero SD SPI applicati
 
 ### Prerequisites
 
-- Python 3.11 or newer
+- Python 3.8 or newer
 - [ufbt](https://pypi.org/project/ufbt/) (Micro Flipper Build Tool)
 - A Flipper Zero device (for testing)
 
@@ -19,9 +19,11 @@ Thank you for your interest in contributing to the Flipper Zero SD SPI applicati
 
 2. Update ufbt to the latest SDK:
    ```bash
-   ufbt update --channel=release  # For Official Firmware
+   ufbt update --channel=release  # For stable release
    # or
-   ufbt update --channel=dev      # For custom firmwares
+   ufbt update --channel=dev      # For bleeding edge
+   # or
+   ufbt update --channel=rc       # For release candidate
    ```
 
 3. Clone the repository:
@@ -59,14 +61,15 @@ This repository uses GitHub Actions for automated building and releases:
 ### Build Workflow
 
 - **Trigger**: Push to main/master/dev branches, pull requests
-- **Purpose**: Validates that the code builds successfully for all supported firmwares
-- **Outputs**: Build artifacts for each firmware variant
+- **Purpose**: Validates that the code builds successfully for all firmware channels and runs linting
+- **Outputs**: Build artifacts for Release, Dev, and RC channels
+- **Technology**: Uses official [flipperdevices/flipperzero-ufbt-action](https://github.com/marketplace/actions/build-flipper-application-package-fap)
 
 ### Release Workflow
 
 - **Trigger**: Push of version tags (e.g., `v0.6.0`) or manual workflow dispatch
-- **Purpose**: Creates GitHub releases with pre-built FAPs for all supported firmwares
-- **Outputs**: Release with FAP files for OFW, Unleashed, RogueMaster, and Momentum
+- **Purpose**: Creates GitHub releases with pre-built FAPs for all firmware channels
+- **Outputs**: Release with FAP files for release, dev, and rc channels
 
 To create a release:
 ```bash
@@ -74,12 +77,14 @@ git tag v0.6.0
 git push origin v0.6.0
 ```
 
-## Supported Firmware Variants
+## Supported Firmware Channels
 
-- **Official Firmware (OFW)**: flipperdevices/flipperzero-firmware
-- **Unleashed Firmware**: DarkFlippers/unleashed-firmware
-- **RogueMaster Firmware**: RogueMaster/flipperzero-firmware-wPlugins
-- **Momentum Firmware**: Next-Flip/Momentum-Firmware
+This project builds for Official Flipper Zero firmware channels:
+- **Release Channel**: Stable release (flipperdevices/flipperzero-firmware, release branch)
+- **Dev Channel**: Bleeding edge development (flipperdevices/flipperzero-firmware, dev branch)
+- **RC Channel**: Release candidate (flipperdevices/flipperzero-firmware, rc branch)
+
+The builds are compatible with third-party firmwares (Unleashed, RogueMaster, Momentum) that maintain API compatibility with official firmware.
 
 ## Code Style
 

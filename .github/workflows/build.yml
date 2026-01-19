@@ -22,65 +22,46 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "Official FW"
-            sdk_channel: "release"
-          - name: "Unleashed FW"
-            sdk_channel: "dev"
-          - name: "RogueMaster FW"
-            sdk_channel: "dev"
-          - name: "Momentum FW"
-            sdk_channel: "dev"
+          - name: "Official Release"
+            sdk-channel: "release"
+          - name: "Official Dev"
+            sdk-channel: "dev"
+          - name: "Official RC"
+            sdk-channel: "rc"
 
     name: Build for ${{ matrix.name }}
     
     steps:
-      - name: Checkout app code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Build with ufbt
+        uses: flipperdevices/flipperzero-ufbt-action@v0.1
+        id: build-app
         with:
-          python-version: '3.11'
+          sdk-channel: ${{ matrix.sdk-channel }}
+          app-dir: sd_spi
 
-      - name: Cache ufbt SDK
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.ufbt
-          key: ${{ runner.os }}-ufbt-${{ matrix.sdk_channel }}-${{ hashFiles('sd_spi/application.fam') }}
-          restore-keys: |
-            ${{ runner.os }}-ufbt-${{ matrix.sdk_channel }}-
-
-      - name: Install ufbt
-        run: |
-          python3 -m pip install --upgrade ufbt
-
-      - name: Update ufbt SDK
-        run: |
-          ufbt update --channel=${{ matrix.sdk_channel }}
-
-      - name: Build FAP
-        run: |
-          cd sd_spi
-          ufbt build
-      
-      - name: Debug - List build outputs
-        run: |
-          echo "Contents of sd_spi directory:"
-          ls -la sd_spi/
-          echo "Looking for .fap files:"
-          find . -name "*.fap" -type f
-
-      - name: Get app version
-        id: version
-        run: |
-          cd sd_spi
-          echo "version=$(grep -oP "fap_version=\(\K[0-9]+,\s*[0-9]+" application.fam | tr -d ' ' | tr ',' '.')" >> $GITHUB_OUTPUT
-
-      - name: Upload artifacts
+      - name: Upload app artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: sd_spi_${{ matrix.name }}_${{ steps.version.outputs.version }}
-          path: |
-            **/*.fap
+          name: ${{ github.event.repository.name }}-${{ matrix.name }}-${{ steps.build-app.outputs.suffix }}
+          path: ${{ steps.build-app.outputs.fap-artifacts }}
           if-no-files-found: error
+
+  lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    name: Lint sources
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint with ufbt
+        uses: flipperdevices/flipperzero-ufbt-action@v0.1
+        with:
+          sdk-channel: dev
+          app-dir: sd_spi
+          task: lint

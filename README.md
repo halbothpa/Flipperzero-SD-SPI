@@ -7,11 +7,12 @@ Flipper Zero FAP for Lock and Unlock SD card / Micro SD card through SPI protoco
 
 ## Supported Firmwares
 
-This application is built and tested for multiple Flipper Zero firmware variants:
-- **Official Firmware (OFW)** - Official Flipper Devices firmware
-- **Unleashed Firmware** - Extended capabilities firmware
-- **RogueMaster Firmware** - Feature-rich custom firmware
-- **Momentum Firmware** - Performance-optimized firmware
+This application is built and tested for Official Flipper Zero firmware channels:
+- **Release Channel** - Stable release version (recommended for most users)
+- **Dev Channel** - Bleeding edge development version  
+- **RC Channel** - Release candidate version
+
+> **Note:** The official ufbt build system is used, which supports all firmware variants based on the official Flipper Zero firmware. Third-party firmwares like Unleashed, RogueMaster, and Momentum typically maintain compatibility with the official firmware API.
 
 <p align="center">
 <img src="SDSPI.gif" />
@@ -49,14 +50,17 @@ After the first save, the password is stored in apps_data/sdspi/pwd.txt. you can
 ### From Releases (Recommended)
 
 1. Download the latest release from the [Releases page](https://github.com/halbothpa/Flipperzero-SD-SPI/releases)
-2. Choose the `.fap` file matching your firmware (ofw, unleashed, roguemaster, or momentum)
+2. Choose the `.fap` file matching your firmware channel:
+   - `sd_spi_release.fap` - For Release channel (stable, recommended)
+   - `sd_spi_dev.fap` - For Dev channel (bleeding edge)
+   - `sd_spi_rc.fap` - For RC channel (release candidate)
 3. Copy the `.fap` file to your Flipper Zero SD card at `apps/GPIO/`
 4. Navigate to `Apps > GPIO > SD SPI` on your Flipper Zero
 
 ### Building from Source
 
 Requirements:
-- Python 3.11 or newer
+- Python 3.8 or newer
 - [ufbt](https://pypi.org/project/ufbt/) - Micro Flipper Build Tool
 
 ```bash
@@ -64,7 +68,7 @@ Requirements:
 pip install ufbt
 
 # Update ufbt to latest SDK
-ufbt update --channel=release  # or dev for custom firmwares
+ufbt update --channel=release  # or dev, rc
 
 # Clone this repository
 git clone https://github.com/halbothpa/Flipperzero-SD-SPI.git
