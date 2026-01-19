@@ -1,0 +1,135 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name for the release (e.g., v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "Official"
+            firmware_repo: "flipperdevices/flipperzero-firmware"
+            firmware_ref: "release"
+            sdk_channel: "release"
+            short_name: "ofw"
+          - name: "Unleashed"
+            firmware_repo: "DarkFlippers/unleashed-firmware"
+            firmware_ref: "dev"
+            sdk_channel: "dev"
+            short_name: "unleashed"
+          - name: "RogueMaster"
+            firmware_repo: "RogueMaster/flipperzero-firmware-wPlugins"
+            firmware_ref: "main"
+            sdk_channel: "dev"
+            short_name: "roguemaster"
+          - name: "Momentum"
+            firmware_repo: "Next-Flip/Momentum-Firmware"
+            firmware_ref: "dev"
+            sdk_channel: "dev"
+            short_name: "momentum"
+
+    name: Build for ${{ matrix.name }}
+    
+    steps:
+      - name: Checkout app code
+        uses: actions/checkout@v4
+        with:
+          path: app
+
+      - name: Checkout firmware
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.firmware_repo }}
+          ref: ${{ matrix.firmware_ref }}
+          path: firmware
+          submodules: recursive
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install ufbt
+        run: |
+          python3 -m pip install --upgrade ufbt
+
+      - name: Update ufbt
+        run: |
+          ufbt update --channel=${{ matrix.sdk_channel }}
+
+      - name: Build FAP
+        run: |
+          cd app/sd_spi
+          ufbt build
+
+      - name: Get app version and prepare artifact
+        id: prepare
+        run: |
+          cd app/sd_spi
+          VERSION=$(grep -oP "fap_version=\(\K[0-9]+,\s*[0-9]+" application.fam | tr -d ' ' | tr ',' '.')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+          # Rename FAP with firmware name
+          FAP_FILE=$(find dist -name "*.fap" | head -n 1)
+          if [ -n "$FAP_FILE" ]; then
+            NEW_NAME="sd_spi_${{ matrix.short_name }}.fap"
+            cp "$FAP_FILE" "dist/$NEW_NAME"
+            echo "fap_name=$NEW_NAME" >> $GITHUB_OUTPUT
+            echo "fap_path=app/sd_spi/dist/$NEW_NAME" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sd_spi_${{ matrix.short_name }}_${{ steps.prepare.outputs.version }}
+          path: ${{ steps.prepare.outputs.fap_path }}
+          if-no-files-found: error
+
+      - name: Determine tag name
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag_name=${{ inputs.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag_name=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create or Update Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.tag_name }}
+          name: Release ${{ steps.tag.outputs.tag_name }}
+          body: |
+            ## SD SPI v${{ steps.prepare.outputs.version }}
+            
+            Flipper Zero FAP for Lock and Unlock SD card through SPI protocol.
+            
+            ### Builds for Multiple Firmwares
+            - Official Firmware (OFW)
+            - Unleashed Firmware
+            - RogueMaster Firmware
+            - Momentum Firmware
+            
+            ### Installation
+            1. Download the appropriate `.fap` file for your firmware
+            2. Copy to `SD Card/apps/GPIO/` folder
+            3. Run from Flipper Zero Apps menu
+          files: |
+            ${{ steps.prepare.outputs.fap_path }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

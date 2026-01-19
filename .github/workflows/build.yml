@@ -1,0 +1,96 @@
+name: Build FAP for Multiple Firmwares
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - dev
+  pull_request:
+    branches:
+      - main
+      - master
+      - dev
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "Official FW"
+            firmware_repo: "flipperdevices/flipperzero-firmware"
+            firmware_ref: "release"
+            sdk_channel: "release"
+          - name: "Unleashed FW"
+            firmware_repo: "DarkFlippers/unleashed-firmware"
+            firmware_ref: "dev"
+            sdk_channel: "dev"
+          - name: "RogueMaster FW"
+            firmware_repo: "RogueMaster/flipperzero-firmware-wPlugins"
+            firmware_ref: "main"
+            sdk_channel: "dev"
+          - name: "Momentum FW"
+            firmware_repo: "Next-Flip/Momentum-Firmware"
+            firmware_ref: "dev"
+            sdk_channel: "dev"
+
+    name: Build for ${{ matrix.name }}
+    
+    steps:
+      - name: Checkout app code
+        uses: actions/checkout@v4
+        with:
+          path: app
+
+      - name: Checkout firmware
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.firmware_repo }}
+          ref: ${{ matrix.firmware_ref }}
+          path: firmware
+          submodules: recursive
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache firmware tools
+        uses: actions/cache@v4
+        with:
+          path: |
+            firmware/.ufbt
+            ~/.ufbt
+          key: ${{ runner.os }}-ufbt-${{ matrix.firmware_repo }}-${{ matrix.firmware_ref }}-${{ hashFiles('firmware/.ufbt/**') }}
+          restore-keys: |
+            ${{ runner.os }}-ufbt-${{ matrix.firmware_repo }}-${{ matrix.firmware_ref }}-
+
+      - name: Install ufbt
+        run: |
+          python3 -m pip install --upgrade ufbt
+
+      - name: Update ufbt
+        run: |
+          ufbt update --channel=${{ matrix.sdk_channel }}
+
+      - name: Build FAP
+        run: |
+          cd app/sd_spi
+          ufbt build
+
+      - name: Get app version
+        id: version
+        run: |
+          cd app/sd_spi
+          echo "version=$(grep -oP "fap_version=\(\K[0-9]+,\s*[0-9]+" application.fam | tr -d ' ' | tr ',' '.')" >> $GITHUB_OUTPUT
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sd_spi_${{ matrix.name }}_${{ steps.version.outputs.version }}
+          path: |
+            app/sd_spi/dist/*.fap
+          if-no-files-found: error
