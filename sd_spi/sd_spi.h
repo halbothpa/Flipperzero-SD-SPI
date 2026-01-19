@@ -7,9 +7,9 @@
 #define SD_TIMEOUT_MS 500 //(1000)
 #define SD_BLOCK_SIZE 512
 
-#define VERSION_APP   "0.5"
-#define DEVELOPED     "halbothpa"
-#define GITHUB        "github.com/halbothpa/Flipperzero-SD-SPI"
+#define VERSION_APP "0.5"
+#define DEVELOPED   "halbothpa"
+#define GITHUB      "github.com/halbothpa/Flipperzero-SD-SPI"
 
 
 typedef enum {
@@ -49,13 +49,13 @@ typedef enum {
  */
 typedef struct {
     /* Header part */
-    uint8_t CSDStruct : 2; /* CSD structure */
-    uint8_t Reserved1 : 6; /* Reserved */
-    uint8_t TAAC : 8; /* Data read access-time 1 */
-    uint8_t NSAC : 8; /* Data read access-time 2 in CLK cycles */
-    uint8_t MaxBusClkFrec : 8; /* Max. bus clock frequency */
+    uint8_t CSDStruct : 2;        /* CSD structure */
+    uint8_t Reserved1 : 6;        /* Reserved */
+    uint8_t TAAC : 8;             /* Data read access-time 1 */
+    uint8_t NSAC : 8;             /* Data read access-time 2 in CLK cycles */
+    uint8_t MaxBusClkFrec : 8;    /* Max. bus clock frequency */
     uint16_t CardComdClasses : 12; /* Card command classes */
-    uint8_t RdBlockLen : 4; /* Max. read data block length */
+    uint8_t RdBlockLen : 4;       /* Max. read data block length */
     uint8_t PartBlockRead : 1; /* Partial blocks for read allowed */
     uint8_t WrBlockMisalign : 1; /* Write block misalignment */
     uint8_t RdBlockMisalign : 1; /* Read block misalignment */
