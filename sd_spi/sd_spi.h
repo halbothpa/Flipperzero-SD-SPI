@@ -4,12 +4,12 @@
 
 #define __IO volatile
 
-#define SD_TIMEOUT_MS 500//(1000)
+#define SD_TIMEOUT_MS 500 //(1000)
 #define SD_BLOCK_SIZE 512
 
-#define VERSION_APP "0.5"
-#define DEVELOPED "halbothpa"
-#define GITHUB "github.com/halbothpa/Flipperzero-SD-SPI"
+#define VERSION_APP   "0.5"
+#define DEVELOPED     "halbothpa"
+#define GITHUB        "github.com/halbothpa/Flipperzero-SD-SPI"
 
 
 typedef enum {
