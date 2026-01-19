@@ -8,8 +8,8 @@
 #define SD_BLOCK_SIZE 512
 
 #define VERSION_APP "0.5"
-#define DEVELOPED " "
-#define GITHUB "github.com/Gl1tchub/Flipperzero-SD-SPI"
+#define DEVELOPED "halbothpa"
+#define GITHUB "github.com/halbothpa/Flipperzero-SD-SPI"
 
 
 typedef enum {
