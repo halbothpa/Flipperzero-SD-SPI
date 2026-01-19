@@ -64,18 +64,24 @@ jobs:
           VERSION=$(grep -oP "fap_version=\(\K[0-9]+,\s*[0-9]+" application.fam | tr -d ' ' | tr ',' '.')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           
-          # Rename FAP with firmware name
-          FAP_FILE=$(find dist -name "*.fap" | head -n 1)
+          # Find and rename FAP with firmware name
+          FAP_FILE=$(find . -name "*.fap" -type f | head -n 1)
           if [ -n "$FAP_FILE" ]; then
             NEW_NAME="sd_spi_${{ matrix.short_name }}.fap"
+            mkdir -p dist
             cp "$FAP_FILE" "dist/$NEW_NAME"
+            echo "fap_path=sd_spi/dist/$NEW_NAME" >> $GITHUB_OUTPUT
+          else
+            echo "Error: No .fap file found!"
+            find . -type f
+            exit 1
           fi
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: fap-${{ matrix.short_name }}
-          path: sd_spi/dist/sd_spi_${{ matrix.short_name }}.fap
+          path: ${{ steps.prepare.outputs.fap_path }}
           if-no-files-found: error
 
   release:

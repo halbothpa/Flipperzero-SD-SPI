@@ -63,6 +63,13 @@ jobs:
         run: |
           cd sd_spi
           ufbt build
+      
+      - name: Debug - List build outputs
+        run: |
+          echo "Contents of sd_spi directory:"
+          ls -la sd_spi/
+          echo "Looking for .fap files:"
+          find . -name "*.fap" -type f
 
       - name: Get app version
         id: version
@@ -75,5 +82,5 @@ jobs:
         with:
           name: sd_spi_${{ matrix.name }}_${{ steps.version.outputs.version }}
           path: |
-            sd_spi/dist/*.fap
+            **/*.fap
           if-no-files-found: error
