@@ -9,6 +9,9 @@ build/
 # ufbt cache
 .ufbt/
 
+# CodeQL
+_codeql_detected_source_root
+
 # Python
 __pycache__/
 *.py[cod]
