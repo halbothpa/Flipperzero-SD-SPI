@@ -36,7 +36,7 @@ Flipper Zero  | SD Card
 
 ## Usage ##
 
-Whenever an sd card is connected it is required make a "Init", if the operation is successul in the "status" tab R1 is "NO ERROR" and it is possible execute other commands.
+Whenever an SD card is connected it is required to make a "Init", if the operation is successful in the "status" tab R1 is "NO ERROR" and it is possible to execute other commands.
 
 "Lock" and "Unlock" work with password set in namesake tab.
 

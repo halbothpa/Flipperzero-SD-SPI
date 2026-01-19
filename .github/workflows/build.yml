@@ -21,20 +21,12 @@ jobs:
       matrix:
         include:
           - name: "Official FW"
-            firmware_repo: "flipperdevices/flipperzero-firmware"
-            firmware_ref: "release"
             sdk_channel: "release"
           - name: "Unleashed FW"
-            firmware_repo: "DarkFlippers/unleashed-firmware"
-            firmware_ref: "dev"
             sdk_channel: "dev"
           - name: "RogueMaster FW"
-            firmware_repo: "RogueMaster/flipperzero-firmware-wPlugins"
-            firmware_ref: "main"
             sdk_channel: "dev"
           - name: "Momentum FW"
-            firmware_repo: "Next-Flip/Momentum-Firmware"
-            firmware_ref: "dev"
             sdk_channel: "dev"
 
     name: Build for ${{ matrix.name }}
