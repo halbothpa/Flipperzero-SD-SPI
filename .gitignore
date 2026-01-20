@@ -1,0 +1,35 @@
+# Build artifacts
+dist/
+build/
+*.fap
+*.elf
+*.bin
+*.dfu
+
+# ufbt cache
+.ufbt/
+
+# CodeQL
+_codeql_detected_source_root
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
