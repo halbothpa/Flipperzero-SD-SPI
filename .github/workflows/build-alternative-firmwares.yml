@@ -51,7 +51,7 @@ jobs:
           ls -lah artifacts/
       
       - name: Upload Unleashed FAP
-        uses: actions/upload-artifact@v4.1.8
+        uses: actions/upload-artifact@v4
         with:
           name: sd_spi_Unleashed
           path: artifacts/sd_spi_unleashed.fap
@@ -94,7 +94,7 @@ jobs:
           ls -lah artifacts/
       
       - name: Upload RogueMaster FAP
-        uses: actions/upload-artifact@v4.1.8
+        uses: actions/upload-artifact@v4
         with:
           name: sd_spi_RogueMaster
           path: artifacts/sd_spi_roguemaster.fap
@@ -137,7 +137,7 @@ jobs:
           ls -lah artifacts/
       
       - name: Upload Momentum FAP
-        uses: actions/upload-artifact@v4.1.8
+        uses: actions/upload-artifact@v4
         with:
           name: sd_spi_Momentum
           path: artifacts/sd_spi_momentum.fap
