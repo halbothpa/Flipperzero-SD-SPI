@@ -368,15 +368,33 @@ void app_scene_on_enter_status(void* context) {
 
     furi_string_cat_str(fs_status, "\nR2");
     if(cmd_answer.r2 != 0xff) {
-      if(cmd_answer.r2 == SdSpi_R2_NO_ERROR){ furi_string_cat_str(fs_status, "\nNO_ERROR"); }
-      if(cmd_answer.r2 & SdSpi_R2_CARD_LOCKED){ furi_string_cat_str(fs_status, "\nCARD_LOCKED"); }
-      if(cmd_answer.r2 & SdSpi_R2_LOCKUNLOCK_ERROR){ furi_string_cat_str(fs_status, "\nLOCKUNLOCK_ERROR"); }
-      if(cmd_answer.r2 & SdSpi_R2_ERROR){ furi_string_cat_str(fs_status, "\nERROR"); }
-      if(cmd_answer.r2 & SdSpi_R2_CC_ERROR){ furi_string_cat_str(fs_status, "\nCC_ERROR"); }
-      if(cmd_answer.r2 & SdSpi_R2_CARD_ECC_FAILED){ furi_string_cat_str(fs_status, "\nCARD_ECC_FAILED"); }
-      if(cmd_answer.r2 & SdSpi_R2_WP_VIOLATION){ furi_string_cat_str(fs_status, "\nWP_VIOLATION"); }
-      if(cmd_answer.r2 & SdSpi_R2_ERASE_PARAM){ furi_string_cat_str(fs_status, "\nERASE_PARAM"); }
-      if(cmd_answer.r2 & SdSpi_R2_OUTOFRANGE){ furi_string_cat_str(fs_status, "\nOUTOFRANGE"); }
+        if(cmd_answer.r2 == SdSpi_R2_NO_ERROR) {
+            furi_string_cat_str(fs_status, "\nNO_ERROR");
+        }
+        if(cmd_answer.r2 & SdSpi_R2_CARD_LOCKED) {
+            furi_string_cat_str(fs_status, "\nCARD_LOCKED");
+        }
+        if(cmd_answer.r2 & SdSpi_R2_LOCKUNLOCK_ERROR) {
+            furi_string_cat_str(fs_status, "\nLOCKUNLOCK_ERROR");
+        }
+        if(cmd_answer.r2 & SdSpi_R2_ERROR) {
+            furi_string_cat_str(fs_status, "\nERROR");
+        }
+        if(cmd_answer.r2 & SdSpi_R2_CC_ERROR) {
+            furi_string_cat_str(fs_status, "\nCC_ERROR");
+        }
+        if(cmd_answer.r2 & SdSpi_R2_CARD_ECC_FAILED) {
+            furi_string_cat_str(fs_status, "\nCARD_ECC_FAILED");
+        }
+        if(cmd_answer.r2 & SdSpi_R2_WP_VIOLATION) {
+            furi_string_cat_str(fs_status, "\nWP_VIOLATION");
+        }
+        if(cmd_answer.r2 & SdSpi_R2_ERASE_PARAM) {
+            furi_string_cat_str(fs_status, "\nERASE_PARAM");
+        }
+        if(cmd_answer.r2 & SdSpi_R2_OUTOFRANGE) {
+            furi_string_cat_str(fs_status, "\nOUTOFRANGE");
+        }
     }
 
     text_box_set_text(app->tb_status, furi_string_get_cstr(fs_status));
@@ -474,7 +492,7 @@ void app_view_dispatcher_init(SDSPIApp* app) {
     FuriString* path;
     path = furi_string_alloc();
     furi_string_set_str(path, EXT_PATH("apps_data/sdspi"));
-    path_append(path,STORAGE_LOCKED_FILE);
+    path_append(path, STORAGE_LOCKED_FILE);
     if(storage_file_exists(storage, furi_string_get_cstr(path))) {
         File* file = storage_file_alloc(storage);
         if(storage_file_open(file, furi_string_get_cstr(path), FSAM_READ, FSOM_OPEN_EXISTING)) {
