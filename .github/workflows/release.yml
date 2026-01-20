@@ -221,6 +221,16 @@ jobs:
             echo "tag_name=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Check if tag exists (workflow_dispatch only)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git fetch --tags
+          if ! git rev-parse "${{ steps.tag.outputs.tag_name }}" >/dev/null 2>&1; then
+            echo "::error::Tag '${{ steps.tag.outputs.tag_name }}' does not exist. Please create the tag first with: git tag ${{ steps.tag.outputs.tag_name }} && git push origin ${{ steps.tag.outputs.tag_name }}"
+            exit 1
+          fi
+          echo "Tag '${{ steps.tag.outputs.tag_name }}' exists. Proceeding with release creation."
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
