@@ -246,14 +246,14 @@ void app_scene_on_enter_password(void* context) {
     FURI_LOG_T(TAG, "app_scene_on_enter_password");
     SDSPIApp* app = context;
     // TextInput* text_input = app->text_input;
-    text_input_set_header_text(app->text_input,"Enter password");
+    text_input_set_header_text(app->text_input, "Enter password");
     text_input_set_validator(app->text_input, text_input_validator, context);
     text_input_set_result_callback(
         app->text_input,
         text_input_done_callback,
         app,
         app->input_pwd,
-        PASSWORD_MAX_LEN+1,
+        PASSWORD_MAX_LEN + 1,
         false);
     view_dispatcher_switch_to_view(app->view_dispatcher, AppView_TextInput);
 }
@@ -273,15 +273,16 @@ void app_scene_on_exit_password(void* context) {
 
 /* App Scene Confirm SD Force Erase */
 void app_dialog_erase_callback(DialogExResult result, void* context) {
-  SDSPIApp* app = context;
-  if(result == DialogExResultLeft) { scene_manager_previous_scene(app->scene_manager); }
-  else if(result == DialogExResultRight) {
-    {
-      SdSpiStatus sdStatus;
-      sdStatus = sd_force_erase();
-      if(notify_sequence(sdStatus)){ scene_manager_previous_scene(app->scene_manager); };
+    SDSPIApp* app = context;
+    if(result == DialogExResultLeft) {
+        scene_manager_previous_scene(app->scene_manager);
+    } else if(result == DialogExResultRight) {
+        SdSpiStatus sdStatus;
+        sdStatus = sd_force_erase();
+        if(notify_sequence(sdStatus)) {
+            scene_manager_previous_scene(app->scene_manager);
+        }
     }
-  }
 }
 void app_scene_on_enter_dialog(void* context) {
     FURI_LOG_T(TAG, "app_scene_on_enter_dialog");
@@ -293,7 +294,7 @@ void app_scene_on_enter_dialog(void* context) {
     dialog_ex_set_left_button_text(app->dialog, "Back");
     dialog_ex_set_right_button_text(app->dialog, "Erase");
     // dialog_ex_set_center_button_text(app->dialog, "Menu List");
-    dialog_ex_set_header(app->dialog, "Erase SD card?", 128/2, 12, AlignCenter, AlignTop);
+    dialog_ex_set_header(app->dialog, "Erase SD card?", 128 / 2, 12, AlignCenter, AlignTop);
     view_dispatcher_switch_to_view(app->view_dispatcher, AppView_Dialog);
 }
 bool app_scene_on_event_dialog(void* context, SceneManagerEvent event) {
@@ -328,7 +329,8 @@ void app_scene_on_enter_info(void* context) {
     furi_string_cat_printf(temp_str, "Developed by: %s\n", DEVELOPED);
     furi_string_cat_printf(temp_str, "Github: %s\n\n", GITHUB);
 
-    widget_add_text_scroll_element(app->widget_about, 0, 16, 128, 50, furi_string_get_cstr(temp_str));
+    widget_add_text_scroll_element(
+        app->widget_about, 0, 16, 128, 50, furi_string_get_cstr(temp_str));
     view_dispatcher_switch_to_view(app->view_dispatcher, AppView_Info);
 }
 bool app_scene_on_event_info(void* context, SceneManagerEvent event) {
@@ -429,8 +431,6 @@ void app_scene_on_exit_status(void* context) {
     text_box_reset(app->tb_status);
 }
 
-
-
 /** collection of all scene on_enter handlers - in the same order as their enum */
 void (*const app_scene_on_enter_handlers[])(void*) = {
     app_scene_on_enter_main_menu,
@@ -486,7 +486,6 @@ void app_scene_manager_init(SDSPIApp* app) {
     FURI_LOG_T(TAG, "app_scene_manager_init");
     app->scene_manager = scene_manager_alloc(&app_scene_event_handlers, app);
 }
-
 
 /** initialise the views, and initialise the view dispatcher with all views */
 void app_view_dispatcher_init(SDSPIApp* app) {
