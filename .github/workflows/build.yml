@@ -22,11 +22,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "Official Release"
+          - name: "Release (compatible with all FW)"
             sdk-channel: "release"
-          - name: "Official Dev"
+          - name: "Dev (compatible with all FW)"
             sdk-channel: "dev"
-          - name: "Official RC"
+          - name: "RC (compatible with all FW)"
             sdk-channel: "rc"
 
     name: Build for ${{ matrix.name }}

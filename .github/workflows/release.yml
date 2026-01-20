@@ -20,13 +20,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "Official Release"
+          - name: "Release (Official/Unleashed/RM/Momentum)"
             sdk-channel: "release"
             short-name: "release"
-          - name: "Official Dev"
+          - name: "Dev (Official/Unleashed/RM/Momentum)"
             sdk-channel: "dev"
             short-name: "dev"
-          - name: "Official RC"
+          - name: "RC (Official/Unleashed/RM/Momentum)"
             sdk-channel: "rc"
             short-name: "rc"
 
@@ -102,11 +102,13 @@ jobs:
             
             Flipper Zero FAP for Lock and Unlock SD card through SPI protocol (CMD42).
             
-            ### Supported Firmware Channels
-            This release includes builds for the following Official Firmware channels:
-            - **sd_spi_release.fap** - Official Release Channel (stable)
-            - **sd_spi_dev.fap** - Official Dev Channel (bleeding edge)
-            - **sd_spi_rc.fap** - Official RC Channel (release candidate)
+            ### Supported Firmwares
+            This release includes builds compatible with **ALL** Flipper Zero firmware variants:
+            - **sd_spi_release.fap** - Release Channel (stable) - Works with Official FW, Unleashed, RogueMaster, Momentum
+            - **sd_spi_dev.fap** - Dev Channel (bleeding edge) - Works with Official FW, Unleashed, RogueMaster, Momentum
+            - **sd_spi_rc.fap** - RC Channel (release candidate) - Works with Official FW, Unleashed, RogueMaster, Momentum
+            
+            All builds use Official SDK channels which maintain API compatibility across firmware variants.
             
             ### Installation
             1. Download the appropriate `.fap` file for your firmware channel
