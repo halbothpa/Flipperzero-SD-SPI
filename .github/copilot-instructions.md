@@ -77,7 +77,7 @@ This is a C-based Flipper Zero FAP (Flipper Application Package) for managing SD
 ### 7. Hardware Considerations
 - Application interacts with SD cards via SPI protocol
 - Default pinout configuration (see README.md for details)
-- GPIO pins: A7 (MOSI), A6 (MISO), A4 (CS), B3 (SCK)
+- GPIO pins: A7 (Mosi), A6 (Miso), A4 (CS), B3 (SCK)
 - Power: 3.3V supply required
 - Consider hardware safety in any SPI protocol changes
 
