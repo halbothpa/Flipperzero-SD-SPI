@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run Super-Linter
-        uses: super-linter/super-linter@v7
+        uses: super-linter/super-linter@v7.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_ALL_CODEBASE: false
@@ -57,7 +57,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run Super-Linter with Auto-fix
-        uses: super-linter/super-linter@v7
+        uses: super-linter/super-linter@v7.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_ALL_CODEBASE: false
@@ -71,7 +71,7 @@ jobs:
           FIX_NATURAL_LANGUAGE: true
 
       - name: Commit and Push Linting Fixes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v5.0.1
         with:
           commit_message: "chore: auto-fix linting issues"
           commit_user_name: super-linter
