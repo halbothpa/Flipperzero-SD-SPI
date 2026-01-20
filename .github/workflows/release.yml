@@ -87,7 +87,7 @@ jobs:
       - name: Build FAP for Unleashed
         run: |
           cd firmware
-          ./fbt fap_dist APPSRC=../app/sd_spi
+          ./fbt fap_dist APPSRC=../app
       
       - name: Find and Copy FAP
         run: |
@@ -118,7 +118,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: RogueMaster/flipperzero-firmware-wPlugins
-          ref: dev
+          ref: 420
           path: firmware
           submodules: recursive
       
@@ -130,7 +130,7 @@ jobs:
       - name: Build FAP for RogueMaster
         run: |
           cd firmware
-          ./fbt fap_dist APPSRC=../app/sd_spi
+          ./fbt fap_dist APPSRC=../app
       
       - name: Find and Copy FAP
         run: |
@@ -173,7 +173,7 @@ jobs:
       - name: Build FAP for Momentum
         run: |
           cd firmware
-          ./fbt fap_dist APPSRC=../app/sd_spi
+          ./fbt fap_dist APPSRC=../app
       
       - name: Find and Copy FAP
         run: |
