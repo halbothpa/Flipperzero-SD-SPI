@@ -1,66 +1,79 @@
 ---
-name: Lint
+name: Lint Code Base
 
 on: # yamllint disable-line rule:truthy
-  push: null
-  pull_request: null
+  push: 
+  pull_request: 
 
-permissions:
+permissions: 
   contents: read
 
-jobs:
-  build:
-    name: Lint
+jobs: 
+  lint: 
+    name: Lint Code Base
     runs-on: ubuntu-latest
 
     permissions:
-      # contents permission to clone the repository
       contents: read
       packages: read
-      # To issues and pull-requests permissions to write results as pull
-      # request comments. Omit them if you don't need summary comments
+      statuses: write
       issues: write
-      pull-requests: write
-      # To report GitHub Actions status checks. Omit if you don't need
-      # to update commit status
-      statuses: write
+      pull-requests:  write
 
-  fix-lint-issues:
-    permissions:
-      # To write linting fixes
-      contents: write
-      # To write Super-linter status checks
-      statuses: write
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-credentials: false
-      - name: Super-Linter
-        uses: super-linter/super-linter@v8.3.2 # x-release-please-version
+
+      - name:  Run Super-Linter
+        uses: super-linter/super-linter@v7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Set your fix mode variables to true
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: main
+          # Enable specific linters for your project
+          VALIDATE_YAML: true
+          VALIDATE_MARKDOWN: true
+          VALIDATE_JSON: true
+          VALIDATE_SHELL_SHFMT:  true
+          VALIDATE_CLANG_FORMAT: true
+
+  fix-lint-issues:
+    name: Auto-fix Linting Issues
+    runs-on: ubuntu-latest
+    # Run on all branches except the default branch
+    if: github.ref_name != github.event.repository.default_branch
+
+    permissions:
+      contents: write
+      statuses: write
+
+    steps: 
+      - name:  Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth:  0
+
+      - name:  Run Super-Linter with Auto-fix
+        uses: super-linter/super-linter@v7
+        env:
+          GITHUB_TOKEN: ${{ secrets. GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE:  false
+          DEFAULT_BRANCH:  main
+          # Enable fix mode for linters
           FIX_SHELL_SHFMT: true
           FIX_YAML_PRETTIER: true
-          FIX_CLANG_FORMAT: true
+          FIX_CLANG_FORMAT:  true
           FIX_JSON: true
-          FIX_NATURAL_LANGUAGE: true
           FIX_MARKDOWN: true
-          # To reuse the same Super-linter configuration that you use in the
-          # lint job without duplicating it, see
-          # https://github.com/super-linter/super-linter/blob/main/docs/run-linter-locally.md#share-environment-variables-between-environments
-      - name: Commit and push linting fixes
-        # Run only on:
-        # - Pull requests
-        # - Not on the default branch
-        if: >
-          github.event_name == 'pull_request' &&
-          github.ref_name != github.event.repository.default_branch
+          FIX_NATURAL_LANGUAGE:  true
+
+      - name: Commit and Push Linting Fixes
         uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
-          commit_message: "chore: fix linting issues"
-          commit_user_name: super-linter
+        with: 
+          commit_message: "chore: auto-fix linting issues"
+          commit_user_name:  super-linter
           commit_user_email: super-linter@super-linter.dev
+          branch: ${{ github.head_ref || github.ref_name }}
