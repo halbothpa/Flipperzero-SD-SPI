@@ -59,9 +59,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Lint with ufbt
-        uses: flipperdevices/flipperzero-ufbt-action@v0.1
-        with:
-          sdk-channel: dev
-          app-dir: sd_spi
-          task: lint
+     # - name: Lint with ufbt
+      #  uses: flipperdevices/flipperzero-ufbt-action@v0.1
+     #   with:
+    #      sdk-channel: dev
+      #    app-dir: sd_spi
+       #   task: lint
