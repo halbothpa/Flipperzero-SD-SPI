@@ -514,7 +514,7 @@ void app_view_dispatcher_init(SDSPIApp* app) {
             FURI_LOG_E(TAG, "File pwd loading");
             char data[PASSWORD_MAX_LEN] = {0};
             if(storage_file_read(file, data, PASSWORD_MAX_LEN) > 0) {
-                FURI_LOG_E(TAG, "File pwd laoded");
+                FURI_LOG_E(TAG, "File pwd loaded");
                 // app->input_pwd = data;
                 strncpy(app->input_pwd, data, PASSWORD_MAX_LEN);
                 FURI_LOG_E(TAG, data);

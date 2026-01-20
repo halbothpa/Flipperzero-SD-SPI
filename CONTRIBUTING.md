@@ -69,7 +69,7 @@ This repository uses GitHub Actions for automated building and releases:
 
 - **Trigger**: Push of version tags (e.g., `v0.6.0`) or manual workflow dispatch
 - **Purpose**: Creates GitHub releases with pre-built FAPs for all firmware channels
-- **Outputs**: Release with FAP files for release, dev, and rc channels
+- **Outputs**: GitHub release containing 6 FAP files: 3 official SDK builds (release, dev, rc) and 3 alternative firmware builds (Unleashed, RogueMaster, Momentum)
 
 To create a release:
 ```bash

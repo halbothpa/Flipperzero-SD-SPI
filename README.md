@@ -50,10 +50,15 @@ After the first save, the password is stored in apps_data/sdspi/pwd.txt. you can
 ### From Releases (Recommended)
 
 1. Download the latest release from the [Releases page](https://github.com/halbothpa/Flipperzero-SD-SPI/releases)
-2. Choose the `.fap` file matching your firmware channel:
-   - `sd_spi_release.fap` - For Release channel (stable, recommended)
-   - `sd_spi_dev.fap` - For Dev channel (bleeding edge)
-   - `sd_spi_rc.fap` - For RC channel (release candidate)
+2. Choose the `.fap` file matching your firmware:
+   - **Official Firmware:**
+     - `sd_spi_official-release.fap` - For Release channel (stable, recommended)
+     - `sd_spi_official-dev.fap` - For Dev channel (bleeding edge)
+     - `sd_spi_official-rc.fap` - For RC channel (release candidate)
+   - **Alternative Firmwares:**
+     - `sd_spi_unleashed.fap` - For Unleashed firmware
+     - `sd_spi_roguemaster.fap` - For RogueMaster firmware
+     - `sd_spi_momentum.fap` - For Momentum firmware
 3. Copy the `.fap` file to your Flipper Zero SD card at `apps/GPIO/`
 4. Navigate to `Apps > GPIO > SD SPI` on your Flipper Zero
 
