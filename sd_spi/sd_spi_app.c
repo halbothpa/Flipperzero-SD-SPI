@@ -356,14 +356,30 @@ void app_scene_on_enter_status(void* context) {
 
     furi_string_cat_str(fs_status, "\nR1");
     if(cmd_answer.r1 != 0xff) {
-      if(cmd_answer.r1 == SdSpi_R1_NO_ERROR){ furi_string_cat_str(fs_status, "\nNO_ERROR"); }
-      if(cmd_answer.r1 & SdSpi_R1_ERASE_RESET){ furi_string_cat_str(fs_status, "\nERASE_RESET"); }
-      if(cmd_answer.r1 & SdSpi_R1_IN_IDLE_STATE){ furi_string_cat_str(fs_status, "\nIN_IDLE_STATE"); }
-      if(cmd_answer.r1 & SdSpi_R1_ILLEGAL_COMMAND){ furi_string_cat_str(fs_status, "\nILLEGAL_COMMAND"); }
-      if(cmd_answer.r1 & SdSpi_R1_COM_CRC_ERROR){ furi_string_cat_str(fs_status, "\nCOM_CRC_ERROR"); }
-      if(cmd_answer.r1 & SdSpi_R1_ERASE_SEQUENCE_ERROR){ furi_string_cat_str(fs_status, "\nERASE_SEQUENCE_ERROR"); }
-      if(cmd_answer.r1 & SdSpi_R1_ADDRESS_ERROR){ furi_string_cat_str(fs_status, "\nADDRESS_ERROR"); }
-      if(cmd_answer.r1 & SdSpi_R1_PARAMETER_ERROR){ furi_string_cat_str(fs_status, "\nPARAMETER_ERROR"); }
+        if(cmd_answer.r1 == SdSpi_R1_NO_ERROR) {
+            furi_string_cat_str(fs_status, "\nNO_ERROR");
+        }
+        if(cmd_answer.r1 & SdSpi_R1_ERASE_RESET) {
+            furi_string_cat_str(fs_status, "\nERASE_RESET");
+        }
+        if(cmd_answer.r1 & SdSpi_R1_IN_IDLE_STATE) {
+            furi_string_cat_str(fs_status, "\nIN_IDLE_STATE");
+        }
+        if(cmd_answer.r1 & SdSpi_R1_ILLEGAL_COMMAND) {
+            furi_string_cat_str(fs_status, "\nILLEGAL_COMMAND");
+        }
+        if(cmd_answer.r1 & SdSpi_R1_COM_CRC_ERROR) {
+            furi_string_cat_str(fs_status, "\nCOM_CRC_ERROR");
+        }
+        if(cmd_answer.r1 & SdSpi_R1_ERASE_SEQUENCE_ERROR) {
+            furi_string_cat_str(fs_status, "\nERASE_SEQUENCE_ERROR");
+        }
+        if(cmd_answer.r1 & SdSpi_R1_ADDRESS_ERROR) {
+            furi_string_cat_str(fs_status, "\nADDRESS_ERROR");
+        }
+        if(cmd_answer.r1 & SdSpi_R1_PARAMETER_ERROR) {
+            furi_string_cat_str(fs_status, "\nPARAMETER_ERROR");
+        }
     }
 
     furi_string_cat_str(fs_status, "\nR2");
