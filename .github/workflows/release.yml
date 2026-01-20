@@ -84,11 +84,6 @@ jobs:
         with:
           python-version: '3.11'
       
-      - name: Install Unleashed Firmware Dependencies
-        run: |
-          cd firmware
-          ./fbt --extra-ext-apps=../app/sd_spi update_git_hooks
-      
       - name: Build FAP for Unleashed
         run: |
           cd firmware
@@ -132,11 +127,6 @@ jobs:
         with:
           python-version: '3.11'
       
-      - name: Install RogueMaster Firmware Dependencies
-        run: |
-          cd firmware
-          ./fbt --extra-ext-apps=../app/sd_spi update_git_hooks
-      
       - name: Build FAP for RogueMaster
         run: |
           cd firmware
@@ -179,11 +169,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
-      - name: Install Momentum Firmware Dependencies
-        run: |
-          cd firmware
-          ./fbt --extra-ext-apps=../app/sd_spi update_git_hooks
       
       - name: Build FAP for Momentum
         run: |
