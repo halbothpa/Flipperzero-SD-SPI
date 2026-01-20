@@ -62,6 +62,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: main
+          # Validate the same file types as the lint job
+          VALIDATE_YAML: true
+          VALIDATE_MARKDOWN: true
+          VALIDATE_JSON: true
+          VALIDATE_SHELL_SHFMT: true
+          VALIDATE_CLANG_FORMAT: true
           # Enable fix mode for linters
           FIX_SHELL_SHFMT: true
           FIX_YAML_PRETTIER: true
