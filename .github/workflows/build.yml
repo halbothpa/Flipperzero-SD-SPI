@@ -1,4 +1,4 @@
-name: Build FAP for Multiple Firmwares
+name: Build FAP with Official SDK
 
 on:
   push:
@@ -22,11 +22,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "Release (compatible with all FW)"
+          - name: "Official-Release"
             sdk-channel: "release"
-          - name: "Dev (compatible with all FW)"
+          - name: "Official-Dev"
             sdk-channel: "dev"
-          - name: "RC (compatible with all FW)"
+          - name: "Official-RC"
             sdk-channel: "rc"
 
     name: Build for ${{ matrix.name }}

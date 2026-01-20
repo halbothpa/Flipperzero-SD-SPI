@@ -1,0 +1,159 @@
+name: Build FAP for Alternative Firmwares
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - dev
+  pull_request:
+    branches:
+      - main
+      - master
+      - dev
+  workflow_dispatch:
+
+jobs:
+  build-unleashed:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    name: Build for Unleashed Firmware
+    
+    steps:
+      - name: Checkout App Repository
+        uses: actions/checkout@v4
+        with:
+          path: app
+      
+      - name: Checkout Unleashed Firmware
+        uses: actions/checkout@v4
+        with:
+          repository: DarkFlippers/unleashed-firmware
+          ref: dev
+          path: firmware
+          submodules: recursive
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install Unleashed Firmware Dependencies
+        run: |
+          cd firmware
+          ./fbt --extra-ext-apps=../app/sd_spi update_git_hooks
+      
+      - name: Build FAP for Unleashed
+        run: |
+          cd firmware
+          ./fbt fap_dist APPSRC=../app/sd_spi
+      
+      - name: Find and Copy FAP
+        run: |
+          mkdir -p dist
+          find firmware/dist -name "*.fap" -exec cp {} dist/sd_spi_unleashed.fap \;
+          ls -lah dist/
+      
+      - name: Upload Unleashed FAP
+        uses: actions/upload-artifact@v4.4.3
+        with:
+          name: sd_spi_Unleashed
+          path: dist/sd_spi_unleashed.fap
+          if-no-files-found: error
+
+  build-roguemaster:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    name: Build for RogueMaster Firmware
+    
+    steps:
+      - name: Checkout App Repository
+        uses: actions/checkout@v4
+        with:
+          path: app
+      
+      - name: Checkout RogueMaster Firmware
+        uses: actions/checkout@v4
+        with:
+          repository: RogueMaster/flipperzero-firmware-wPlugins
+          ref: dev
+          path: firmware
+          submodules: recursive
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install RogueMaster Firmware Dependencies
+        run: |
+          cd firmware
+          ./fbt --extra-ext-apps=../app/sd_spi update_git_hooks
+      
+      - name: Build FAP for RogueMaster
+        run: |
+          cd firmware
+          ./fbt fap_dist APPSRC=../app/sd_spi
+      
+      - name: Find and Copy FAP
+        run: |
+          mkdir -p dist
+          find firmware/dist -name "*.fap" -exec cp {} dist/sd_spi_roguemaster.fap \;
+          ls -lah dist/
+      
+      - name: Upload RogueMaster FAP
+        uses: actions/upload-artifact@v4.4.3
+        with:
+          name: sd_spi_RogueMaster
+          path: dist/sd_spi_roguemaster.fap
+          if-no-files-found: error
+
+  build-momentum:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    name: Build for Momentum Firmware
+    
+    steps:
+      - name: Checkout App Repository
+        uses: actions/checkout@v4
+        with:
+          path: app
+      
+      - name: Checkout Momentum Firmware
+        uses: actions/checkout@v4
+        with:
+          repository: Next-Flip/Momentum-Firmware
+          ref: dev
+          path: firmware
+          submodules: recursive
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install Momentum Firmware Dependencies
+        run: |
+          cd firmware
+          ./fbt --extra-ext-apps=../app/sd_spi update_git_hooks
+      
+      - name: Build FAP for Momentum
+        run: |
+          cd firmware
+          ./fbt fap_dist APPSRC=../app/sd_spi
+      
+      - name: Find and Copy FAP
+        run: |
+          mkdir -p dist
+          find firmware/dist -name "*.fap" -exec cp {} dist/sd_spi_momentum.fap \;
+          ls -lah dist/
+      
+      - name: Upload Momentum FAP
+        uses: actions/upload-artifact@v4.4.3
+        with:
+          name: sd_spi_Momentum
+          path: dist/sd_spi_momentum.fap
+          if-no-files-found: error
