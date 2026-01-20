@@ -475,48 +475,54 @@ void app_view_dispatcher_init(SDSPIApp* app) {
     path = furi_string_alloc();
     furi_string_set_str(path, EXT_PATH("apps_data/sdspi"));
     path_append(path,STORAGE_LOCKED_FILE);
-    if(storage_file_exists(storage,furi_string_get_cstr(path))) {
-      File* file = storage_file_alloc(storage);
-      if(storage_file_open(file, furi_string_get_cstr(path), FSAM_READ, FSOM_OPEN_EXISTING)) {
-          FURI_LOG_E(TAG, "File pwd loading");
-          char data[PASSWORD_MAX_LEN] = {0};
-          if(storage_file_read(file, data, PASSWORD_MAX_LEN)>0){
-            FURI_LOG_E(TAG, "File pwd laoded");
-            // app->input_pwd = data;
-            strncpy(app->input_pwd,data,PASSWORD_MAX_LEN);
-            FURI_LOG_E(TAG, data);
-          }
-          storage_file_close(file);
-      }
-      else{
-        FURI_LOG_E(TAG, "File pwd not found");
-      }
-      FURI_LOG_E(TAG, "storage_file_free");
-      storage_file_free(file);
+    if(storage_file_exists(storage, furi_string_get_cstr(path))) {
+        File* file = storage_file_alloc(storage);
+        if(storage_file_open(file, furi_string_get_cstr(path), FSAM_READ, FSOM_OPEN_EXISTING)) {
+            FURI_LOG_E(TAG, "File pwd loading");
+            char data[PASSWORD_MAX_LEN] = {0};
+            if(storage_file_read(file, data, PASSWORD_MAX_LEN) > 0) {
+                FURI_LOG_E(TAG, "File pwd laoded");
+                // app->input_pwd = data;
+                strncpy(app->input_pwd, data, PASSWORD_MAX_LEN);
+                FURI_LOG_E(TAG, data);
+            }
+            storage_file_close(file);
+        } else {
+            FURI_LOG_E(TAG, "File pwd not found");
+        }
+        FURI_LOG_E(TAG, "storage_file_free");
+        storage_file_free(file);
     }
     furi_string_free(path);
     furi_record_close(RECORD_STORAGE);
 
     FURI_LOG_D(TAG, "app_view_dispatcher_init setting callbacks");
     view_dispatcher_set_event_callback_context(app->view_dispatcher, app);
-    view_dispatcher_set_custom_event_callback(app->view_dispatcher, app_scene_manager_custom_event_callback);
-    view_dispatcher_set_navigation_event_callback(app->view_dispatcher, app_scene_manager_navigation_event_callback);
+    view_dispatcher_set_custom_event_callback(
+        app->view_dispatcher, app_scene_manager_custom_event_callback);
+    view_dispatcher_set_navigation_event_callback(
+        app->view_dispatcher, app_scene_manager_navigation_event_callback);
 
     // add views to the dispatcher, indexed by their enum value
     FURI_LOG_D(TAG, "app_view_dispatcher_init adding view menu");
-    view_dispatcher_add_view(app->view_dispatcher, AppView_Menu, submenu_get_view(app->menu));
+    view_dispatcher_add_view(
+        app->view_dispatcher, AppView_Menu, submenu_get_view(app->menu));
 
     FURI_LOG_D(TAG, "app_view_dispatcher_init adding view textbox");
-    view_dispatcher_add_view(app->view_dispatcher, AppView_Status, text_box_get_view(app->tb_status));
+    view_dispatcher_add_view(
+        app->view_dispatcher, AppView_Status, text_box_get_view(app->tb_status));
 
     FURI_LOG_D(TAG, "app_view_dispatcher_init adding view dialog");
-    view_dispatcher_add_view(app->view_dispatcher, AppView_Dialog, dialog_ex_get_view(app->dialog));
+    view_dispatcher_add_view(
+        app->view_dispatcher, AppView_Dialog, dialog_ex_get_view(app->dialog));
 
     FURI_LOG_D(TAG, "app_view_dispatcher_init adding view password");
-    view_dispatcher_add_view(app->view_dispatcher, AppView_TextInput, text_input_get_view(app->text_input));
+    view_dispatcher_add_view(
+        app->view_dispatcher, AppView_TextInput, text_input_get_view(app->text_input));
 
     FURI_LOG_D(TAG, "app_view_dispatcher_init adding view about");
-    view_dispatcher_add_view(app->view_dispatcher, AppView_Info, widget_get_view(app->widget_about));
+    view_dispatcher_add_view(
+        app->view_dispatcher, AppView_Info, widget_get_view(app->widget_about));
 }
 
 /** initialise app data, scene manager, and view dispatcher */
