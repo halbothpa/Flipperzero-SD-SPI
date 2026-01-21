@@ -13,17 +13,36 @@ name: Build FAP for Alternative Firmwares
       - master
       - dev
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Lint Code Base"]
-    types:
-      - completed
 
 jobs:
-  build-unleashed:
+  lint:
+    name: Lint Code
     runs-on: ubuntu-latest
-    if: >-
-      github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success'
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Super-Linter
+        uses: super-linter/super-linter@v7.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: main
+          # Enable specific linters for your project
+          VALIDATE_YAML: true
+          VALIDATE_MARKDOWN: true
+          VALIDATE_JSON: true
+          VALIDATE_SHELL_SHFMT: true
+          VALIDATE_CLANG_FORMAT: true
+
+  build-unleashed:
+    needs: lint
+    runs-on: ubuntu-latest
     permissions:
       contents: read
     name: Build for Unleashed Firmware
@@ -67,10 +86,8 @@ jobs:
           if-no-files-found: error
 
   build-roguemaster:
+    needs: lint
     runs-on: ubuntu-latest
-    if: >-
-      github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success'
     permissions:
       contents: read
     name: Build for RogueMaster Firmware
@@ -114,10 +131,8 @@ jobs:
           if-no-files-found: error
 
   build-momentum:
+    needs: lint
     runs-on: ubuntu-latest
-    if: >-
-      github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success'
     permissions:
       contents: read
     name: Build for Momentum Firmware

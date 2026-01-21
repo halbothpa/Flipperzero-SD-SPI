@@ -13,17 +13,36 @@ name: Build FAP with Official SDK
       - master
       - dev
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Lint Code Base"]
-    types:
-      - completed
 
 jobs:
-  build:
+  lint:
+    name: Lint Code
     runs-on: ubuntu-latest
-    if: >-
-      github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success'
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Super-Linter
+        uses: super-linter/super-linter@v7.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: main
+          # Enable specific linters for your project
+          VALIDATE_YAML: true
+          VALIDATE_MARKDOWN: true
+          VALIDATE_JSON: true
+          VALIDATE_SHELL_SHFMT: true
+          VALIDATE_CLANG_FORMAT: true
+
+  build:
+    needs: lint
+    runs-on: ubuntu-latest
     permissions:
       contents: read
     strategy:
@@ -58,20 +77,3 @@ jobs:
             steps.build-app.outputs.suffix }}
           path: ${{ steps.build-app.outputs.fap-artifacts }}
           if-no-files-found: error
-
-  # lint:
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: read
-  #   name: Lint sources
-  #
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #
-  #     - name: Lint with ufbt
-  #       uses: flipperdevices/flipperzero-ufbt-action@v0.1
-  #       with:
-  #         sdk-channel: dev
-  #         app-dir: sd_spi
-  #         task: lint
