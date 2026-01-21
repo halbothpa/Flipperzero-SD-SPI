@@ -1,13 +1,16 @@
+---
 name: Release
 
-on:
+"on":
   push:
     tags:
       - 'v*'
   workflow_dispatch:
     inputs:
       tag_name:
-        description: 'Tag name for the release (e.g., v1.0.0). Note: The action will create the tag if it does not exist.'
+        description: >-
+          Tag name for the release (e.g., v1.0.0). Note: The action will
+          create the tag if it does not exist.
         required: true
         type: string
 
@@ -31,7 +34,7 @@ jobs:
             short-name: "official-rc"
 
     name: Build for ${{ matrix.name }}
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -64,13 +67,13 @@ jobs:
     permissions:
       contents: read
     name: Build for Unleashed Firmware
-    
+
     steps:
       - name: Checkout App Repository
         uses: actions/checkout@v4
         with:
           path: app
-      
+
       - name: Checkout Unleashed Firmware
         uses: actions/checkout@v4
         with:
@@ -78,23 +81,24 @@ jobs:
           ref: dev
           path: firmware
           submodules: recursive
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
+
       - name: Build FAP for Unleashed
         run: |
           cd firmware
           ./fbt fap_dist APPSRC=../app
-      
+
       - name: Find and Copy FAP
         run: |
           mkdir -p artifacts
-          find firmware/dist -name "*.fap" -exec cp {} artifacts/sd_spi_unleashed.fap \;
+          find firmware/dist -name "*.fap" \
+            -exec cp {} artifacts/sd_spi_unleashed.fap \;
           ls -lah artifacts/
-      
+
       - name: Upload Unleashed FAP
         uses: actions/upload-artifact@v4
         with:
@@ -107,13 +111,13 @@ jobs:
     permissions:
       contents: read
     name: Build for RogueMaster Firmware
-    
+
     steps:
       - name: Checkout App Repository
         uses: actions/checkout@v4
         with:
           path: app
-      
+
       - name: Checkout RogueMaster Firmware
         uses: actions/checkout@v4
         with:
@@ -121,23 +125,24 @@ jobs:
           ref: 420
           path: firmware
           submodules: recursive
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
+
       - name: Build FAP for RogueMaster
         run: |
           cd firmware
           ./fbt fap_dist APPSRC=../app
-      
+
       - name: Find and Copy FAP
         run: |
           mkdir -p artifacts
-          find firmware/dist -name "*.fap" -exec cp {} artifacts/sd_spi_roguemaster.fap \;
+          find firmware/dist -name "*.fap" \
+            -exec cp {} artifacts/sd_spi_roguemaster.fap \;
           ls -lah artifacts/
-      
+
       - name: Upload RogueMaster FAP
         uses: actions/upload-artifact@v4
         with:
@@ -150,13 +155,13 @@ jobs:
     permissions:
       contents: read
     name: Build for Momentum Firmware
-    
+
     steps:
       - name: Checkout App Repository
         uses: actions/checkout@v4
         with:
           path: app
-      
+
       - name: Checkout Momentum Firmware
         uses: actions/checkout@v4
         with:
@@ -164,23 +169,24 @@ jobs:
           ref: dev
           path: firmware
           submodules: recursive
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
+
       - name: Build FAP for Momentum
         run: |
           cd firmware
           ./fbt fap_dist APPSRC=../app
-      
+
       - name: Find and Copy FAP
         run: |
           mkdir -p artifacts
-          find firmware/dist -name "*.fap" -exec cp {} artifacts/sd_spi_momentum.fap \;
+          find firmware/dist -name "*.fap" \
+            -exec cp {} artifacts/sd_spi_momentum.fap \;
           ls -lah artifacts/
-      
+
       - name: Upload Momentum FAP
         uses: actions/upload-artifact@v4
         with:
@@ -193,7 +199,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -209,7 +215,8 @@ jobs:
       - name: Get app version
         id: version
         run: |
-          VERSION=$(grep -oP "fap_version=\(\K[0-9]+,\s*[0-9]+" sd_spi/application.fam | tr -d ' ' | tr ',' '.')
+          VERSION=$(grep -oP "fap_version=\(\K[0-9]+,\s*[0-9]+" \
+            sd_spi/application.fam | tr -d ' ' | tr ',' '.')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Determine tag name
@@ -225,11 +232,16 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         run: |
           git fetch --tags
-          if ! git rev-parse "${{ steps.tag.outputs.tag_name }}" >/dev/null 2>&1; then
-            echo "::error::Tag '${{ steps.tag.outputs.tag_name }}' does not exist. Please create the tag first with: git tag ${{ steps.tag.outputs.tag_name }} && git push origin ${{ steps.tag.outputs.tag_name }}"
+          if ! git rev-parse "${{ steps.tag.outputs.tag_name }}" \
+            >/dev/null 2>&1; then
+            echo "::error::Tag '${{ steps.tag.outputs.tag_name }}' does \
+              not exist. Please create the tag first with: git tag \
+              ${{ steps.tag.outputs.tag_name }} && git push origin \
+              ${{ steps.tag.outputs.tag_name }}"
             exit 1
           fi
-          echo "Tag '${{ steps.tag.outputs.tag_name }}' exists. Proceeding with release creation."
+          echo "Tag '${{ steps.tag.outputs.tag_name }}' exists. Proceeding \
+            with release creation."
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -238,27 +250,28 @@ jobs:
           name: Release ${{ steps.tag.outputs.tag_name }}
           body: |
             ## SD SPI v${{ steps.version.outputs.version }}
-            
-            Flipper Zero FAP for Lock and Unlock SD card through SPI protocol (CMD42).
-            
+
+            Flipper Zero FAP for Lock and Unlock SD card through SPI
+            protocol (CMD42).
+
             ### Supported Firmwares
             This release includes builds for each specific firmware variant:
-            
+
             **Official Firmware Builds** (via Official SDK):
             - **sd_spi_official-release.fap** - Release Channel (stable)
             - **sd_spi_official-dev.fap** - Dev Channel (bleeding edge)
             - **sd_spi_official-rc.fap** - RC Channel (release candidate)
-            
+
             **Alternative Firmware Specific Builds**:
             - **sd_spi_unleashed.fap** - Built against Unleashed Firmware
             - **sd_spi_roguemaster.fap** - Built against RogueMaster Firmware
             - **sd_spi_momentum.fap** - Built against Momentum Firmware
-            
+
             ### Installation
             1. Download the `.fap` file for your specific firmware
             2. Copy to `SD Card/apps/GPIO/` folder on your Flipper Zero
             3. Navigate to `Apps > GPIO > SD SPI` on your device
-            
+
             ### Features
             - Initialize SD card via SPI
             - Lock SD card with password (CMD42)
