@@ -1,6 +1,7 @@
+---
 name: Build FAP with Official SDK
 
-on:
+"on":
   push:
     branches:
       - main
@@ -12,10 +13,17 @@ on:
       - master
       - dev
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Lint Code Base"]
+    types:
+      - completed
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     permissions:
       contents: read
     strategy:
@@ -30,7 +38,7 @@ jobs:
             sdk-channel: "rc"
 
     name: Build for ${{ matrix.name }}
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,23 +53,25 @@ jobs:
       - name: Upload app artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.repository.name }}-${{ matrix.name }}-${{ steps.build-app.outputs.suffix }}
+          name: >-
+            ${{ github.event.repository.name }}-${{ matrix.name }}-${{
+            steps.build-app.outputs.suffix }}
           path: ${{ steps.build-app.outputs.fap-artifacts }}
           if-no-files-found: error
 
-#  lint:
-#    runs-on: ubuntu-latest
-#    permissions:
-#      contents: read
-#    name: Lint sources
-#    
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v4
-
-#      - name: Lint with ufbt
-#        uses: flipperdevices/flipperzero-ufbt-action@v0.1
-#        with:
-#          sdk-channel: dev
-          app-dir: sd_spi
-          task: lint
+  # lint:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #   name: Lint sources
+  #
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Lint with ufbt
+  #       uses: flipperdevices/flipperzero-ufbt-action@v0.1
+  #       with:
+  #         sdk-channel: dev
+  #         app-dir: sd_spi
+  #         task: lint

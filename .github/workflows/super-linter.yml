@@ -1,7 +1,7 @@
 ---
 name: Lint Code Base
 
-on: # yamllint disable-line rule:truthy
+"on":  # yamllint disable-line rule:truthy
   push:
   pull_request:
 
@@ -38,13 +38,17 @@ jobs:
           VALIDATE_JSON: true
           VALIDATE_SHELL_SHFMT: true
           VALIDATE_CLANG_FORMAT: true
-          #VALIDATE_YAML_PRETTIER: true
-          
+          # VALIDATE_YAML_PRETTIER: true
+
   fix-lint-issues:
     name: Auto-fix Linting Issues
     runs-on: ubuntu-latest
-    # Run on all branches except the default branch, and not on PRs from forks
-    if: github.ref_name != github.event.repository.default_branch && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request')
+    # Run on all branches except the default branch,
+    # and not on PRs from forks
+    if: >-
+      github.ref_name != github.event.repository.default_branch &&
+      (github.event.pull_request.head.repo.full_name == github.repository ||
+      github.event_name != 'pull_request')
 
     permissions:
       contents: write
@@ -76,7 +80,7 @@ jobs:
           FIX_CLANG_FORMAT: true
           FIX_JSON: true
           FIX_MARKDOWN: true
-          #FIX_YAML: true
+          # FIX_YAML: true
 
       - name: Commit and Push Linting Fixes
         uses: stefanzweifel/git-auto-commit-action@v5.0.1

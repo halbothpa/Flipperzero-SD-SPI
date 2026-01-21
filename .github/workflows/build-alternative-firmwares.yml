@@ -1,6 +1,7 @@
+---
 name: Build FAP for Alternative Firmwares
 
-on:
+"on":
   push:
     branches:
       - main
@@ -12,20 +13,27 @@ on:
       - master
       - dev
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Lint Code Base"]
+    types:
+      - completed
 
 jobs:
   build-unleashed:
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     permissions:
       contents: read
     name: Build for Unleashed Firmware
-    
+
     steps:
       - name: Checkout App Repository
         uses: actions/checkout@v4
         with:
           path: app
-      
+
       - name: Checkout Unleashed Firmware
         uses: actions/checkout@v4
         with:
@@ -33,23 +41,24 @@ jobs:
           ref: dev
           path: firmware
           submodules: recursive
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
+
       - name: Build FAP for Unleashed
         run: |
           cd firmware
           ./fbt fap_dist APPSRC=../app
-      
+
       - name: Find and Copy FAP
         run: |
           mkdir -p artifacts
-          find firmware/dist -name "*.fap" -exec cp {} artifacts/sd_spi_unleashed.fap \;
+          find firmware/dist -name "*.fap" \
+            -exec cp {} artifacts/sd_spi_unleashed.fap \;
           ls -lah artifacts/
-      
+
       - name: Upload Unleashed FAP
         uses: actions/upload-artifact@v4
         with:
@@ -59,16 +68,19 @@ jobs:
 
   build-roguemaster:
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     permissions:
       contents: read
     name: Build for RogueMaster Firmware
-    
+
     steps:
       - name: Checkout App Repository
         uses: actions/checkout@v4
         with:
           path: app
-      
+
       - name: Checkout RogueMaster Firmware
         uses: actions/checkout@v4
         with:
@@ -76,23 +88,24 @@ jobs:
           ref: 420
           path: firmware
           submodules: recursive
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
+
       - name: Build FAP for RogueMaster
         run: |
           cd firmware
           ./fbt fap_dist APPSRC=../app
-      
+
       - name: Find and Copy FAP
         run: |
           mkdir -p artifacts
-          find firmware/dist -name "*.fap" -exec cp {} artifacts/sd_spi_roguemaster.fap \;
+          find firmware/dist -name "*.fap" \
+            -exec cp {} artifacts/sd_spi_roguemaster.fap \;
           ls -lah artifacts/
-      
+
       - name: Upload RogueMaster FAP
         uses: actions/upload-artifact@v4
         with:
@@ -102,16 +115,19 @@ jobs:
 
   build-momentum:
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     permissions:
       contents: read
     name: Build for Momentum Firmware
-    
+
     steps:
       - name: Checkout App Repository
         uses: actions/checkout@v4
         with:
           path: app
-      
+
       - name: Checkout Momentum Firmware
         uses: actions/checkout@v4
         with:
@@ -119,23 +135,24 @@ jobs:
           ref: dev
           path: firmware
           submodules: recursive
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
+
       - name: Build FAP for Momentum
         run: |
           cd firmware
           ./fbt fap_dist APPSRC=../app
-      
+
       - name: Find and Copy FAP
         run: |
           mkdir -p artifacts
-          find firmware/dist -name "*.fap" -exec cp {} artifacts/sd_spi_momentum.fap \;
+          find firmware/dist -name "*.fap" \
+            -exec cp {} artifacts/sd_spi_momentum.fap \;
           ls -lah artifacts/
-      
+
       - name: Upload Momentum FAP
         uses: actions/upload-artifact@v4
         with:
