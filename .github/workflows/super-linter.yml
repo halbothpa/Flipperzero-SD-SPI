@@ -38,7 +38,8 @@ jobs:
           VALIDATE_JSON: true
           VALIDATE_SHELL_SHFMT: true
           VALIDATE_CLANG_FORMAT: true
-
+          VALIDATE_YAML_PRETTIER: true
+          
   fix-lint-issues:
     name: Auto-fix Linting Issues
     runs-on: ubuntu-latest
@@ -68,12 +69,14 @@ jobs:
           VALIDATE_JSON: true
           VALIDATE_SHELL_SHFMT: true
           VALIDATE_CLANG_FORMAT: true
+          VALIDATE_YAML_PRETTIER: true
           # Enable fix mode for linters
           FIX_SHELL_SHFMT: true
           FIX_YAML_PRETTIER: true
           FIX_CLANG_FORMAT: true
           FIX_JSON: true
           FIX_MARKDOWN: true
+          #FIX_YAML: true
 
       - name: Commit and Push Linting Fixes
         uses: stefanzweifel/git-auto-commit-action@v5.0.1
