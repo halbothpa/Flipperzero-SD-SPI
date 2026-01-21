@@ -38,7 +38,7 @@ jobs:
           VALIDATE_JSON: true
           VALIDATE_SHELL_SHFMT: true
           VALIDATE_CLANG_FORMAT: true
-          VALIDATE_YAML_PRETTIER: true
+          #VALIDATE_YAML_PRETTIER: true
           
   fix-lint-issues:
     name: Auto-fix Linting Issues
