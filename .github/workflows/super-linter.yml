@@ -1,7 +1,7 @@
 ---
 name: Lint Code Base
 
-"on":  # yamllint disable-line rule:truthy
+"on": # yamllint disable-line rule:truthy
   push:
   pull_request:
 
@@ -67,6 +67,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_ALL_CODEBASE: true
+          RUN_LOCAL: true
           DEFAULT_BRANCH: main
           # Validate the same file types as the lint job
           VALIDATE_YAML: true
