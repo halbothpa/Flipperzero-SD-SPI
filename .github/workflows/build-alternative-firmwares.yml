@@ -67,6 +67,7 @@ jobs:
 
       - name: Build FAP for Unleashed
         run: |
+          mkdir -p firmware/applications/external
           cp -r app/sd_spi firmware/applications/external/sd_spi
           cd firmware
           ./fbt fap_dist APPSRC=applications/external/sd_spi
@@ -113,6 +114,7 @@ jobs:
 
       - name: Build FAP for RogueMaster
         run: |
+          mkdir -p firmware/applications/external
           cp -r app/sd_spi firmware/applications/external/sd_spi
           cd firmware
           ./fbt fap_dist APPSRC=applications/external/sd_spi
@@ -159,6 +161,7 @@ jobs:
 
       - name: Build FAP for Momentum
         run: |
+          mkdir -p firmware/applications/external
           cp -r app/sd_spi firmware/applications/external/sd_spi
           cd firmware
           ./fbt fap_dist APPSRC=applications/external/sd_spi
