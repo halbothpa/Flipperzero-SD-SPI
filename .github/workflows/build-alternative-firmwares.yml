@@ -67,10 +67,9 @@ jobs:
 
       - name: Build FAP for Unleashed
         run: |
-          mkdir -p firmware/applications/external
-          cp -r app/sd_spi firmware/applications/external/sd_spi
+          cp -r app/sd_spi firmware/sd_spi_build
           cd firmware
-          ./fbt fap_dist APPSRC=applications/external/sd_spi
+          ./fbt fap_dist APPSRC=sd_spi_build
 
       - name: Find and Copy FAP
         run: |
@@ -114,10 +113,9 @@ jobs:
 
       - name: Build FAP for RogueMaster
         run: |
-          mkdir -p firmware/applications/external
-          cp -r app/sd_spi firmware/applications/external/sd_spi
+          cp -r app/sd_spi firmware/sd_spi_build
           cd firmware
-          ./fbt fap_dist APPSRC=applications/external/sd_spi
+          ./fbt fap_dist APPSRC=sd_spi_build
 
       - name: Find and Copy FAP
         run: |
