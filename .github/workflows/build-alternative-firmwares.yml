@@ -38,9 +38,6 @@ jobs:
           VALIDATE_MARKDOWN: true
           VALIDATE_JSON: true
           VALIDATE_SHELL_SHFMT: true
-          # Disable clang-format in build workflow
-          # (auto-fix in super-linter.yml)
-          VALIDATE_CLANG_FORMAT: false
 
   build-unleashed:
     needs: lint
