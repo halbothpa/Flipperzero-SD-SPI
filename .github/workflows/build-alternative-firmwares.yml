@@ -1,6 +1,7 @@
+---
 name: Build FAP for Alternative Firmwares
 
-on:
+"on":
   push:
     branches:
       - main
@@ -14,18 +15,43 @@ on:
   workflow_dispatch:
 
 jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Super-Linter
+        uses: super-linter/super-linter@v7.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: main
+          # Enable specific linters for your project
+          VALIDATE_YAML: true
+          VALIDATE_MARKDOWN: true
+          VALIDATE_JSON: true
+          VALIDATE_SHELL_SHFMT: true
+
   build-unleashed:
+    needs: lint
     runs-on: ubuntu-latest
     permissions:
       contents: read
     name: Build for Unleashed Firmware
-    
+
     steps:
       - name: Checkout App Repository
         uses: actions/checkout@v4
         with:
           path: app
-      
+
       - name: Checkout Unleashed Firmware
         uses: actions/checkout@v4
         with:
@@ -33,23 +59,26 @@ jobs:
           ref: dev
           path: firmware
           submodules: recursive
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      
+          python-version: "3.11"
+
       - name: Build FAP for Unleashed
         run: |
+          mkdir -p firmware/applications/external
+          cp -r app/sd_spi firmware/applications/external/sd_spi
           cd firmware
-          ./fbt fap_dist APPSRC=../app
-      
+          ./fbt fap_sd_spi_app
+
       - name: Find and Copy FAP
         run: |
           mkdir -p artifacts
-          find firmware/dist -name "*.fap" -exec cp {} artifacts/sd_spi_unleashed.fap \;
+          find firmware/dist -name "*.fap" \
+            -exec cp {} artifacts/sd_spi_unleashed.fap \;
           ls -lah artifacts/
-      
+
       - name: Upload Unleashed FAP
         uses: actions/upload-artifact@v4
         with:
@@ -58,17 +87,18 @@ jobs:
           if-no-files-found: error
 
   build-roguemaster:
+    needs: lint
     runs-on: ubuntu-latest
     permissions:
       contents: read
     name: Build for RogueMaster Firmware
-    
+
     steps:
       - name: Checkout App Repository
         uses: actions/checkout@v4
         with:
           path: app
-      
+
       - name: Checkout RogueMaster Firmware
         uses: actions/checkout@v4
         with:
@@ -76,23 +106,26 @@ jobs:
           ref: 420
           path: firmware
           submodules: recursive
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      
+          python-version: "3.11"
+
       - name: Build FAP for RogueMaster
         run: |
+          mkdir -p firmware/applications/external
+          cp -r app/sd_spi firmware/applications/external/sd_spi
           cd firmware
-          ./fbt fap_dist APPSRC=../app
-      
+          ./fbt fap_sd_spi_app
+
       - name: Find and Copy FAP
         run: |
           mkdir -p artifacts
-          find firmware/dist -name "*.fap" -exec cp {} artifacts/sd_spi_roguemaster.fap \;
+          find firmware/dist -name "*.fap" \
+            -exec cp {} artifacts/sd_spi_roguemaster.fap \;
           ls -lah artifacts/
-      
+
       - name: Upload RogueMaster FAP
         uses: actions/upload-artifact@v4
         with:
@@ -101,17 +134,18 @@ jobs:
           if-no-files-found: error
 
   build-momentum:
+    needs: lint
     runs-on: ubuntu-latest
     permissions:
       contents: read
     name: Build for Momentum Firmware
-    
+
     steps:
       - name: Checkout App Repository
         uses: actions/checkout@v4
         with:
           path: app
-      
+
       - name: Checkout Momentum Firmware
         uses: actions/checkout@v4
         with:
@@ -119,23 +153,26 @@ jobs:
           ref: dev
           path: firmware
           submodules: recursive
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      
+          python-version: "3.11"
+
       - name: Build FAP for Momentum
         run: |
+          mkdir -p firmware/applications/external
+          cp -r app/sd_spi firmware/applications/external/sd_spi
           cd firmware
-          ./fbt fap_dist APPSRC=../app
-      
+          ./fbt fap_dist APPSRC=applications/external/sd_spi
+
       - name: Find and Copy FAP
         run: |
           mkdir -p artifacts
-          find firmware/dist -name "*.fap" -exec cp {} artifacts/sd_spi_momentum.fap \;
+          find firmware/dist -name "*.fap" \
+            -exec cp {} artifacts/sd_spi_momentum.fap \;
           ls -lah artifacts/
-      
+
       - name: Upload Momentum FAP
         uses: actions/upload-artifact@v4
         with:

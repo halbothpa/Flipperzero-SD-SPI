@@ -13,11 +13,13 @@ Thank you for your interest in contributing to the Flipper Zero SD SPI applicati
 ### Setting Up Your Environment
 
 1. Install ufbt:
+
    ```bash
    pip install ufbt
    ```
 
 2. Update ufbt to the latest SDK:
+
    ```bash
    ufbt update --channel=release  # For stable release
    # or
@@ -27,6 +29,7 @@ Thank you for your interest in contributing to the Flipper Zero SD SPI applicati
    ```
 
 3. Clone the repository:
+
    ```bash
    git clone https://github.com/halbothpa/Flipperzero-SD-SPI.git
    cd Flipperzero-SD-SPI/sd_spi
@@ -35,6 +38,7 @@ Thank you for your interest in contributing to the Flipper Zero SD SPI applicati
 ### Building
 
 Build the FAP:
+
 ```bash
 cd sd_spi
 ufbt build
@@ -45,11 +49,13 @@ The compiled `.fap` file will be in the `dist/` directory.
 ### Testing
 
 Deploy and launch on a connected Flipper Zero:
+
 ```bash
 ufbt launch
 ```
 
 View logs:
+
 ```bash
 ufbt cli
 ```
@@ -61,17 +67,23 @@ This repository uses GitHub Actions for automated building and releases:
 ### Build Workflow
 
 - **Trigger**: Push to main/master/dev branches, pull requests
-- **Purpose**: Validates that the code builds successfully for all firmware channels and runs linting
+- **Purpose**: Validates that the code builds successfully for all firmware
+  channels and runs linting
 - **Outputs**: Build artifacts for Release, Dev, and RC channels
-- **Technology**: Uses official [flipperdevices/flipperzero-ufbt-action](https://github.com/marketplace/actions/build-flipper-application-package-fap)
+- **Technology**: Uses official
+  [flipperdevices/flipperzero-ufbt-action](https://github.com/marketplace/actions/build-flipper-application-package-fap)
 
 ### Release Workflow
 
 - **Trigger**: Push of version tags (e.g., `v0.6.0`) or manual workflow dispatch
-- **Purpose**: Creates GitHub releases with pre-built FAPs for all firmware channels
-- **Outputs**: GitHub release containing 6 FAP files: 3 official SDK builds (release, dev, rc) and 3 alternative firmware builds (Unleashed, RogueMaster, Momentum)
+- **Purpose**: Creates GitHub releases with pre-built FAPs for all firmware
+  channels
+- **Outputs**: GitHub release containing 6 FAP files: 3 official SDK builds
+  (release, dev, rc) and 3 alternative firmware builds (Unleashed, RogueMaster,
+  Momentum)
 
 To create a release:
+
 ```bash
 git tag v0.6.0
 git push origin v0.6.0
@@ -80,11 +92,16 @@ git push origin v0.6.0
 ## Supported Firmware Channels
 
 This project builds for Official Flipper Zero firmware channels:
-- **Release Channel**: Stable release (flipperdevices/flipperzero-firmware, release branch)
-- **Dev Channel**: Bleeding edge development (flipperdevices/flipperzero-firmware, dev branch)
-- **RC Channel**: Release candidate (flipperdevices/flipperzero-firmware, rc branch)
 
-The builds are compatible with third-party firmwares (Unleashed, RogueMaster, Momentum) that maintain API compatibility with official firmware.
+- **Release Channel**: Stable release (flipperdevices/flipperzero-firmware,
+  release branch)
+- **Dev Channel**: Bleeding edge development (flipperdevices/flipperzero-firmware,
+  dev branch)
+- **RC Channel**: Release candidate (flipperdevices/flipperzero-firmware,
+  rc branch)
+
+The builds are compatible with third-party firmwares (Unleashed, RogueMaster,
+Momentum) that maintain API compatibility with official firmware.
 
 ## Code Style
 
